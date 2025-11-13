@@ -1,0 +1,93 @@
+# Build results
+bin/
+obj/
+out/
+wwwroot/
+
+# Logs
+*.log
+logs/
+
+# User-specific files
+*.user
+*.suo
+*.userprefs
+
+# Backup files
+*.bak
+*.orig
+
+# Visual Studio cache
+.vs/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+# Entity Framework Migrations build artifacts
+Migrations/obj/
+
+# Rider
+.idea/
+
+# JetBrains Rider / ReSharper
+*.DotSettings.user
+
+# Publish output
+publish/
+
+# Secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+
+# Never commit JWT keys
+*.key
+*.pfx
+*.pem
+*.cer
+*.crt
+
+# dotenv
+.env
+.env.*
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+*~
+
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# Build / Dist
+dist/
+build/
+
+# Local environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Vite
+.vite/
+
+# VSCode
+.vscode/
+
+
