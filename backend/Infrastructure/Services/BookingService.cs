@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Domain.Repositories;
 using Infrastructure.DTOs.Booking;
+using Infrastructure.Enums;
 using Infrastructure.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,9 @@ public interface IBookingService
     Task<BookingDTO> CreateAsync(CreateBookingDTO bookingDto);
     Task<BookingDTO> UpdateAsync(UpdateBookingDTO bookingDto, Guid id);
     Task<BookingDTO> DeleteAsync(Guid id);
+    Task<BookingDTO> AcceptOrRejectAsync(AcceptOrRefuseDTO requestDto, Guid id);
+    Task<List<BookingDTO>> GetUserHistoryBookingsAsync();
+    Task<List<BookingDTO>> GetOwnerHistoryBookingsAsync();
 }
 
 public class BookingService : BaseService, IBookingService
@@ -61,7 +65,8 @@ public class BookingService : BaseService, IBookingService
         var overlapping = await _unitOfWork.Bookings.QueryAsync(q =>
             q.Where(b => b.CarId == bookingDto.CarId &&
                          b.StartDate <= bookingDto.EndDate &&
-                         b.EndDate >= bookingDto.StartDate)
+                         b.EndDate >= bookingDto.StartDate &&
+                         b.Status != "Rejected")
         );
 
         if (overlapping.Any())
@@ -127,5 +132,56 @@ public class BookingService : BaseService, IBookingService
         await _unitOfWork.SaveChangesAsync();
         
         return existingBooking.ToBookingDTO();
+    }
+
+    public async Task<BookingDTO> AcceptOrRejectAsync(AcceptOrRefuseDTO requestDto, Guid id)
+    {
+        var existingBooking = await _unitOfWork.Bookings.GetByIdFullAsync(id);
+
+        if (existingBooking == null)
+            throw new Exception("Booking not found");
+
+        if (existingBooking.Status != BookingStatusCode.Pending.ToString())
+            throw new Exception("Only pending bookings can be updated");
+
+        if (requestDto.Status == BookingStatusCode.Rejected.ToString())
+        {
+            existingBooking.Status = BookingStatusCode.Rejected.ToString();
+            await _unitOfWork.SaveChangesAsync();
+            return existingBooking.ToBookingDTO();
+        }
+
+        if (requestDto.Status == BookingStatusCode.Accepted.ToString())
+        {
+            existingBooking.Status = BookingStatusCode.Accepted.ToString();
+            await _unitOfWork.SaveChangesAsync();
+            return existingBooking.ToBookingDTO();
+        }
+        
+        throw new Exception("Invalid booking status");
+    }
+
+    public async Task<List<BookingDTO>> GetUserHistoryBookingsAsync()
+    {
+        var userId = GetCurrentUserId();
+        
+        var bookings = await _unitOfWork.Bookings.GetAllFullAsync();
+        var bookingsDto = bookings.Where(b => b.RenterId == userId).Select(b => b.ToBookingDTO()).ToList();
+        
+        return bookingsDto;
+    }
+
+    public async Task<List<BookingDTO>> GetOwnerHistoryBookingsAsync()
+    {
+        var ownerId = GetCurrentUserId();
+
+        var bookings = await _unitOfWork.Bookings.QueryAsync(q =>
+            q.Where(b => b.Car.OwnerId == ownerId)
+                .OrderByDescending(b => b.StartDate)
+        );
+
+        return bookings
+            .Select(b => b.ToBookingDTO())
+            .ToList();
     }
 }

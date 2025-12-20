@@ -9,6 +9,7 @@ public static class CarMapper
     {
         return new CarDTO
         {
+            Id = car.Id,
             Brand = car.Brand,
             Model = car.Model,
             Year = car.Year,

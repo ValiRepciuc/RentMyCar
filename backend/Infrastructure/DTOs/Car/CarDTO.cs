@@ -4,6 +4,7 @@ namespace Infrastructure.DTOs.Car;
 
 public class CarDTO
 {
+    public Guid Id { get; set; }
     public  string Brand { get; set; } = String.Empty;
     public string Model { get; set; } = String.Empty;
     public int Year { get; set; }

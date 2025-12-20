@@ -59,6 +59,7 @@ public class AccountController : ControllerBase
             var role = requestedRole == "owner" ? "Owner" : "User";
             
             var roleResult = await _userManager.AddToRoleAsync(appUser, role);
+            var roles = await _userManager.GetRolesAsync(appUser);
             if (!roleResult.Succeeded)
                 return BadRequest(roleResult.Errors);
 
@@ -70,7 +71,7 @@ public class AccountController : ControllerBase
                 LastName = appUser.LastName,
                 City = appUser.City,
                 Role = role,
-                Token = _tokenService.CreateToken(appUser)
+                Token = _tokenService.CreateToken(appUser, roles)
             });
         }
         catch (Exception ex)
@@ -90,6 +91,7 @@ public class AccountController : ControllerBase
             return Unauthorized("Invalid username!");
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+        var roles = await _userManager.GetRolesAsync(user);
         if (!result.Succeeded)
             return Unauthorized("Invalid username or password.");
 
@@ -102,7 +104,7 @@ public class AccountController : ControllerBase
                 FirstName = user.FristName,
                 LastName = user.LastName,
                 City = user.City,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user, roles)
             });
     }
     

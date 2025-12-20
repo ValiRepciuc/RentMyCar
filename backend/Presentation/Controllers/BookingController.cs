@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Infrastructure.DTOs.Booking;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
@@ -48,5 +49,34 @@ public class BookingController : ControllerBase
     {
         var booking = await _bookingService.DeleteAsync(id);
         return Ok(booking);
+    }
+
+    [HttpPut("{bookingId:guid}/accept-or-reject")]
+    public async Task<IActionResult> AcceptOrRejectAsync([FromBody] AcceptOrRefuseDTO requestDto,
+        [FromRoute] Guid bookingId)
+    {
+        var result  = await _bookingService.AcceptOrRejectAsync(requestDto, bookingId);
+
+        if (result == null)
+        {
+            return NoContent();
+        }
+        return Ok(result);
+    }
+
+    [HttpGet("/get-user-history")]
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> GetUserHistoryAsync()
+    {
+        var result = await _bookingService.GetUserHistoryBookingsAsync();
+        return Ok(result);
+    }
+
+    [HttpGet("/get-owner-history")]
+    [Authorize(Roles = "Owner")]
+    public async Task<IActionResult> GetOwnerHistoryAsync()
+    {
+        var result = await _bookingService.GetOwnerHistoryBookingsAsync();
+        return Ok(result);
     }
 }
