@@ -66,7 +66,9 @@ public static class Configuration
             .AddScoped<ICarRepository, CarRepository>()
             .AddScoped<ICarService, CarService>()
             .AddScoped<IBookingRepository, IBookingRepository.BookingRepository>()
-            .AddScoped<IBookingService, BookingService>();
+            .AddScoped<IBookingService, BookingService>()
+            .AddScoped<IReviewRepository, ReviewRepository>()
+            .AddScoped<IReviewService, ReviewService>();
         
         return services;
     }

@@ -7,6 +7,7 @@ public interface IUnitOfWork
     IUserRepository Users { get; }
     ICarRepository Cars { get; }
     IBookingRepository Bookings { get; }
+    IReviewRepository Reviews { get; }
   
     Task<bool> SaveChangesAsync();
 }
@@ -22,6 +23,7 @@ public class UnitOfWork : IUnitOfWork
         Users = new UserRepository(_context);
         Cars = new CarRepository(_context);
         Bookings = new IBookingRepository.BookingRepository(_context);
+        Reviews = new ReviewRepository(_context);
        
     }
 
@@ -30,6 +32,7 @@ public class UnitOfWork : IUnitOfWork
 
     public ICarRepository Cars { get; }
     public IBookingRepository Bookings { get; }
+    public IReviewRepository Reviews { get; }
 
     public async Task<bool> SaveChangesAsync()
     {
