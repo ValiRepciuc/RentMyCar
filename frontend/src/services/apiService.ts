@@ -2,49 +2,49 @@ import { apiConfig, endpoints } from '../config/api';
 
 // Backend DTOs interfaces
 interface NewUserDTO {
-  Email: string;
-  FirstName: string;
-  LastName: string;
-  UserName: string;
-  City: string;
-  Role: string;
-  Token: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  userName: string;
+  city: string;
+  role: string;
+  token: string;
 }
 
 interface CarDTO {
-  Id: string;
-  Brand: string;
-  Model: string;
-  Year: number;
-  PricePerDay: number;
-  City: string;
-  FuelType: string;
-  Transmission: string;
-  IsActive: boolean;
-  OwnerId: string;
-  OwnerName: string;
+  id: string;
+  brand: string;
+  model: string;
+  year: number;
+  pricePerDay: number;
+  city: string;
+  fuelType: string;
+  transmission: string;
+  isActive: boolean;
+  ownerId: string;
+  ownerName: string;
 }
 
 interface BookingDTO {
-  Id: string;
-  CarId: string;
-  CarBrand: string;
-  CarModel: string;
-  RenterId: string;
-  RenterName: string;
-  StartDate: string;
-  EndDate: string;
-  TotalPrice: number;
-  Status: string;
+  id: string;
+  carId: string;
+  carBrand: string;
+  carModel: string;
+  renterId: string;
+  renterName: string;
+  startDate: string;
+  endDate: string;
+  totalPrice: number;
+  status: string;
 }
 
 interface ReviewDTO {
-  Id: string;
-  BookingId: string;
-  Rating: number;
-  Comment: string;
-  ReviewerName: string;
-  CreatedAt: string;
+  id: string;
+  bookingId: string;
+  rating: number;
+  comment: string;
+  reviewerName: string;
+  createdAt: string;
 }
 
 export const apiService = {
@@ -54,7 +54,7 @@ export const apiService = {
       method: 'POST',
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
-      body: JSON.stringify({ UserName: username, Password: password }),
+      body: JSON.stringify({ userName: username, password: password }),
     });
     
     if (!response.ok) {
@@ -79,13 +79,13 @@ export const apiService = {
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
       body: JSON.stringify({
-        Email: data.email,
-        Password: data.password,
-        UserName: data.userName,
-        FirstName: data.firstName,
-        LastName: data.lastName,
-        City: data.city,
-        Role: data.role,
+        email: data.email,
+        password: data.password,
+        userName: data.userName,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        city: data.city,
+        role: data.role,
       }),
     });
     
@@ -108,10 +108,10 @@ export const apiService = {
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
       body: JSON.stringify({
-        UserName: data.userName,
-        FirstName: data.firstName,
-        LastName: data.lastName,
-        City: data.city,
+        userName: data.userName,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        city: data.city,
       }),
     });
     
@@ -181,13 +181,13 @@ export const apiService = {
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
       body: JSON.stringify({
-        Brand: data.brand,
-        Model: data.model,
-        Year: data.year,
-        PricePerDay: data.pricePerDay,
-        City: data.city,
-        FuelType: data.fuelType,
-        Transmission: data.transmission,
+        brand: data.brand,
+        model: data.model,
+        year: data.year,
+        pricePerDay: data.pricePerDay,
+        city: data.city,
+        fuelType: data.fuelType,
+        transmission: data.transmission,
       }),
     });
     
@@ -214,14 +214,14 @@ export const apiService = {
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
       body: JSON.stringify({
-        Brand: data.brand,
-        Model: data.model,
-        Year: data.year,
-        PricePerDay: data.pricePerDay,
-        City: data.city,
-        FuelType: data.fuelType,
-        Transmission: data.transmission,
-        IsActive: data.isActive,
+        brand: data.brand,
+        model: data.model,
+        year: data.year,
+        pricePerDay: data.pricePerDay,
+        city: data.city,
+        fuelType: data.fuelType,
+        transmission: data.transmission,
+        isActive: data.isActive,
       }),
     });
     
@@ -282,9 +282,9 @@ export const apiService = {
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
       body: JSON.stringify({
-        CarId: data.carId,
-        StartDate: data.startDate,
-        EndDate: data.endDate,
+        carId: data.carId,
+        startDate: data.startDate,
+        endDate: data.endDate,
       }),
     });
     
@@ -305,8 +305,8 @@ export const apiService = {
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
       body: JSON.stringify({
-        StartDate: data.startDate,
-        EndDate: data.endDate,
+        startDate: data.startDate,
+        endDate: data.endDate,
       }),
     });
     
@@ -323,7 +323,7 @@ export const apiService = {
       method: 'PUT',
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
-      body: JSON.stringify({ Accept: accept }),
+      body: JSON.stringify({ accept: accept }),
     });
     
     if (!response.ok) {
@@ -394,8 +394,8 @@ export const apiService = {
       headers: apiConfig.headers,
       credentials: apiConfig.credentials,
       body: JSON.stringify({
-        Rating: data.rating,
-        Comment: data.comment,
+        rating: data.rating,
+        comment: data.comment,
       }),
     });
     

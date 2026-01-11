@@ -63,6 +63,17 @@ public class AccountController : ControllerBase
             if (!roleResult.Succeeded)
                 return BadRequest(roleResult.Errors);
 
+            var token = _tokenService.CreateToken(appUser, roles);
+            
+            // Set the JWT token as an HTTP-only cookie
+            Response.Cookies.Append("access_token", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Only send over HTTPS
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
+
             return Ok(new NewUserDTO
             {
                 UserName = appUser.UserName,
@@ -71,7 +82,7 @@ public class AccountController : ControllerBase
                 LastName = appUser.LastName,
                 City = appUser.City,
                 Role = role,
-                Token = _tokenService.CreateToken(appUser, roles)
+                Token = token
             });
         }
         catch (Exception ex)
@@ -95,6 +106,16 @@ public class AccountController : ControllerBase
         if (!result.Succeeded)
             return Unauthorized("Invalid username or password.");
 
+        var token = _tokenService.CreateToken(user, roles);
+        
+        // Set the JWT token as an HTTP-only cookie
+        Response.Cookies.Append("access_token", token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true, // Only send over HTTPS
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTimeOffset.UtcNow.AddDays(7)
+        });
 
         return Ok(
             new NewUserDTO
@@ -104,7 +125,8 @@ public class AccountController : ControllerBase
                 FirstName = user.FristName,
                 LastName = user.LastName,
                 City = user.City,
-                Token = _tokenService.CreateToken(user, roles)
+                Token = token,
+                Role = roles.FirstOrDefault() ?? "User"
             });
     }
     
