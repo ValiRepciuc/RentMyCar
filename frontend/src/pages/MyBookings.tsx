@@ -10,7 +10,8 @@ interface MyBookingsProps {
   onNavigate: (page: string) => void;
 }
 
-export const MyBookings = ({ onNavigate }: MyBookingsProps) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const MyBookings = (_props: MyBookingsProps) => {
   const { currentUser, bookings, cars, users, cancelBooking, addReview } = useApp();
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);

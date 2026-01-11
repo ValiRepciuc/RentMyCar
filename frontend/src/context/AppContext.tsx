@@ -31,7 +31,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users] = useState<User[]>(initialUsers);
   const [cars, setCars] = useState<Car[]>(initialCars);
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
@@ -96,7 +96,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
     // Load initial data from API
     loadCars();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -126,7 +125,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       await loadBookings();
       
       return true;
-    } catch (error) {
+    } catch {
       addToast('error', 'Invalid email or password');
       return false;
     }
