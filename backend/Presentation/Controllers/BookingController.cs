@@ -31,10 +31,17 @@ public class BookingController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(BookingDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAsync([FromBody] CreateBookingDTO booking)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         var createdBooking = await _bookingService.CreateAsync(booking);
-        return Ok(createdBooking);
+        return CreatedAtAction(nameof(GetByIdAsync), new { id = createdBooking.Id }, createdBooking);
     }
 
     [HttpPut("{id:guid}")]

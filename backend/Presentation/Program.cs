@@ -1,6 +1,7 @@
 
 using Domain.Database;
 using Domain.Entities;
+using Infrastructure.Data;
 using Infrastructure.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -9,10 +10,14 @@ using Presentation;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Check for seed command
+var shouldSeed = args.Contains("--seed") || args.Contains("seed");
+
 builder.Services.AddControllers().AddControllersAsServices().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
 });
 
 builder.Services.AddHttpContextAccessor();
@@ -29,7 +34,11 @@ builder.Services
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = true;
         options.Password.RequiredLength = 8;
-    }).AddEntityFrameworkStores<DatabaseContext>();
+    })
+    .AddEntityFrameworkStores<DatabaseContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
 // Validate JWT configuration
 var jwtSigningKey = builder.Configuration["JWT:SigningKey"];
@@ -93,6 +102,51 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Handle seeding if requested
+if (shouldSeed)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<DatabaseContext>();
+            var userManager = services.GetRequiredService<UserManager<AppUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            
+            // Ensure database is created and migrations are applied
+            await context.Database.EnsureCreatedAsync();
+            
+            // Ensure roles exist
+            string[] roles = { "User", "Owner" };
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
+            
+            // Run seeder
+            var seeder = new DataSeeder(context, userManager);
+            await seeder.SeedAsync();
+            
+            Console.WriteLine("Seeding completed successfully!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error during seeding: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            return;
+        }
+    }
+    return;
+}
+
+// Enable static files for images
+app.UseStaticFiles();
+
 app.UseSwagger(c => { c.RouteTemplate = "api/swagger/{documentName}/swagger.json"; });
 app.UseSwaggerUI(c =>
 {
