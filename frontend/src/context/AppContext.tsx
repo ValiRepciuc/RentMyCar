@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, Car, Booking, Review, Toast } from '../types';
-import { users as initialUsers, cars as initialCars, bookings as initialBookings, reviews as initialReviews } from '../data/dummyData';
 import { apiService } from '../services/apiService';
 
 interface AppContextType {
@@ -31,38 +30,38 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [users] = useState<User[]>(initialUsers);
-  const [cars, setCars] = useState<Car[]>(initialCars);
-  const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [users] = useState<User[]>([]);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const loadCars = async () => {
     try {
       const carsData = await apiService.getCars();
       const mappedCars: Car[] = carsData.map(carDto => ({
-        id: carDto.Id,
-        ownerId: carDto.OwnerId,
-        make: carDto.Brand,
-        model: carDto.Model,
-        year: carDto.Year,
-        city: carDto.City,
-        pricePerDay: carDto.PricePerDay,
-        image: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&q=80',
-        images: ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&q=80'],
-        description: `${carDto.Brand} ${carDto.Model} ${carDto.Year}`,
-        features: [carDto.Transmission, carDto.FuelType],
-        transmission: carDto.Transmission.toLowerCase() === 'automatic' ? 'automatic' : 'manual',
-        fuelType: carDto.FuelType.toLowerCase() as 'gasoline' | 'diesel' | 'electric' | 'hybrid',
-        seats: 5,
-        available: carDto.IsActive,
-        rating: 4.5,
-        reviewCount: 0,
+        id: carDto.id,
+        ownerId: carDto.ownerId,
+        make: carDto.brand,
+        model: carDto.model,
+        year: carDto.year,
+        city: carDto.city,
+        pricePerDay: carDto.pricePerDay,
+        image: carDto.imageUrl,
+        images: carDto.imageUrls,
+        description: carDto.description,
+        features: carDto.features,
+        transmission: carDto.transmission.toLowerCase() === 'automatic' ? 'automatic' : 'manual',
+        fuelType: carDto.fuelType.toLowerCase() as 'gasoline' | 'diesel' | 'electric' | 'hybrid',
+        seats: carDto.seats,
+        available: carDto.isActive,
+        rating: carDto.rating,
+        reviewCount: carDto.reviewCount,
       }));
       setCars(mappedCars);
     } catch (error) {
       console.error('Failed to load cars:', error);
-      // Keep using dummy data if API fails
+      addToast('error', 'Failed to load cars from server');
     }
   };
 
@@ -72,23 +71,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       const bookingsData = await apiService.getBookings();
       const mappedBookings: Booking[] = bookingsData.map(bookingDto => {
         // Try to find the car to get ownerId, otherwise use empty string
-        const car = cars.find(c => c.id === bookingDto.CarId);
+        const car = cars.find(c => c.id === bookingDto.carId);
         return {
-          id: bookingDto.Id,
-          carId: bookingDto.CarId,
-          clientId: bookingDto.RenterId,
+          id: bookingDto.id,
+          carId: bookingDto.carId,
+          clientId: bookingDto.renterId,
           ownerId: car?.ownerId || '', // Get from car data if available
-          startDate: bookingDto.StartDate,
-          endDate: bookingDto.EndDate,
-          totalPrice: bookingDto.TotalPrice,
-          status: bookingDto.Status.toLowerCase() as 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled',
+          startDate: bookingDto.startDate,
+          endDate: bookingDto.endDate,
+          totalPrice: bookingDto.totalPrice,
+          status: bookingDto.status.toLowerCase() as 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled',
           createdAt: new Date().toISOString(),
         };
       });
       setBookings(mappedBookings);
     } catch (error) {
       console.error('Failed to load bookings:', error);
-      // Keep using dummy data if API fails
+      addToast('error', 'Failed to load bookings from server');
     }
   };
 
@@ -224,23 +223,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       });
 
       const newCar: Car = {
-        id: carDto.Id,
-        ownerId: carDto.OwnerId,
-        make: carDto.Brand,
-        model: carDto.Model,
-        year: carDto.Year,
-        city: carDto.City,
-        pricePerDay: carDto.PricePerDay,
-        image: carData.image,
-        images: carData.images,
-        description: carData.description,
-        features: carData.features,
-        transmission: carDto.Transmission.toLowerCase() === 'automatic' ? 'automatic' : 'manual',
-        fuelType: carDto.FuelType.toLowerCase() as 'gasoline' | 'diesel' | 'electric' | 'hybrid',
-        seats: carData.seats,
-        available: carDto.IsActive,
-        rating: carData.rating,
-        reviewCount: carData.reviewCount,
+        id: carDto.id,
+        ownerId: carDto.ownerId,
+        make: carDto.brand,
+        model: carDto.model,
+        year: carDto.year,
+        city: carDto.city,
+        pricePerDay: carDto.pricePerDay,
+        image: carDto.imageUrl,
+        images: carDto.imageUrls,
+        description: carDto.description,
+        features: carDto.features,
+        transmission: carDto.transmission.toLowerCase() === 'automatic' ? 'automatic' : 'manual',
+        fuelType: carDto.fuelType.toLowerCase() as 'gasoline' | 'diesel' | 'electric' | 'hybrid',
+        seats: carDto.seats,
+        available: carDto.isActive,
+        rating: carDto.rating,
+        reviewCount: carDto.reviewCount,
       };
       
       setCars([...cars, newCar]);
@@ -292,14 +291,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       });
 
       const newBooking: Booking = {
-        id: bookingDto.Id,
-        carId: bookingDto.CarId,
-        clientId: bookingDto.RenterId,
+        id: bookingDto.id,
+        carId: bookingDto.carId,
+        clientId: bookingDto.renterId,
         ownerId: bookingData.ownerId,
-        startDate: bookingDto.StartDate,
-        endDate: bookingDto.EndDate,
-        totalPrice: bookingDto.TotalPrice,
-        status: bookingDto.Status.toLowerCase() as 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled',
+        startDate: bookingDto.startDate,
+        endDate: bookingDto.endDate,
+        totalPrice: bookingDto.totalPrice,
+        status: bookingDto.status.toLowerCase() as 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled',
         createdAt: new Date().toISOString(),
       };
       
@@ -358,13 +357,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       });
 
       const newReview: Review = {
-        id: reviewDto.Id,
-        bookingId: reviewDto.BookingId,
+        id: reviewDto.id,
+        bookingId: reviewDto.bookingId,
         carId: reviewData.carId,
         clientId: reviewData.clientId,
-        rating: reviewDto.Rating,
-        comment: reviewDto.Comment,
-        createdAt: reviewDto.CreatedAt,
+        rating: reviewDto.rating,
+        comment: reviewDto.comment,
+        createdAt: reviewDto.createdAt,
       };
       
       setReviews([...reviews, newReview]);

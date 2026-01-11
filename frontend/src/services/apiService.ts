@@ -23,6 +23,13 @@ interface CarDTO {
   isActive: boolean;
   ownerId: string;
   ownerName: string;
+  imageUrl: string;
+  imageUrls: string[];
+  description: string;
+  features: string[];
+  seats: number;
+  rating: number;
+  reviewCount: number;
 }
 
 interface BookingDTO {
