@@ -118,7 +118,7 @@ if (shouldSeed)
             // Ensure database is created and migrations are applied
             await context.Database.EnsureCreatedAsync();
             
-            // Ensure roles exist
+            // Ensure required roles exist (User and Owner roles are needed for seeded users)
             string[] roles = { "User", "Owner" };
             foreach (var role in roles)
             {

@@ -120,7 +120,8 @@ public class DataSeeder
                     FuelType = carData.FuelType,
                     Transmission = carData.Transmission,
                     OwnerId = owner.Id,
-                    IsActive = carData.Id != "car-7" // car-7 is unavailable in mock data
+                    // car-7 (Mercedes-Benz C-Class) is marked as unavailable in frontend mock data
+                    IsActive = carData.Id != "car-7"
                 };
 
                 _context.Car.Add(car);
