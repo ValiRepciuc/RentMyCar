@@ -1,0 +1,17 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5433;Database=RentMyCar;Username=YOUR_USERNAME;Password=YOUR_PASSWORD"
+  },
+  "JWT": {
+    "Issuer": "YOUR_BACKEND_URL",
+    "Audience": "YOUR_FRONTEND_URL",
+    "SigningKey": "YOUR_SECRET_KEY_AT_LEAST_32_CHARACTERS_LONG_FOR_HMACSHA512"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
