@@ -9,6 +9,10 @@ using Presentation;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Check for seed argument
+var shouldSeed = args.Contains("--seed");
+
 builder.Services.AddControllers().AddControllersAsServices().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
@@ -75,6 +79,31 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Handle seeding if --seed argument is provided
+if (shouldSeed)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<DatabaseContext>();
+            var userManager = services.GetRequiredService<UserManager<AppUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            await SeedData.SeedAsync(context, userManager, roleManager);
+            Console.WriteLine("Seeding completed successfully. Exiting...");
+            return;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while seeding the database: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+            throw;
+        }
+    }
+}
+
 app.UseSwagger(c => { c.RouteTemplate = "api/swagger/{documentName}/swagger.json"; });
 app.UseSwaggerUI(c =>
 {
@@ -86,6 +115,7 @@ app.UseSwaggerUI(c =>
     c.DefaultModelsExpandDepth(0);
 });
 app.UseRouting();
+app.UseStaticFiles(); // Enable static files serving
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseExceptionHandlerMiddleware();

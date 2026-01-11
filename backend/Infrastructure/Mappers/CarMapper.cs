@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Domain.Entities;
 using Infrastructure.DTOs.Car;
 
@@ -18,6 +19,13 @@ public static class CarMapper
             FuelType = car.FuelType,
             Transmission = car.Transmission,
             IsActive = car.IsActive,
+            Description = car.Description,
+            Features = string.IsNullOrEmpty(car.Features) ? Array.Empty<string>() : JsonSerializer.Deserialize<string[]>(car.Features) ?? Array.Empty<string>(),
+            ImageUrl = car.ImageUrl,
+            ImageUrls = string.IsNullOrEmpty(car.ImageUrls) ? Array.Empty<string>() : JsonSerializer.Deserialize<string[]>(car.ImageUrls) ?? Array.Empty<string>(),
+            Seats = car.Seats,
+            Rating = car.Rating,
+            ReviewCount = car.ReviewCount,
             OwnerId = car.OwnerId,
             OwnerName = $"{car.Owner.FristName} {car.Owner.LastName}"
         };
