@@ -41,7 +41,7 @@ public class BookingController : ControllerBase
         }
         
         var createdBooking = await _bookingService.CreateAsync(booking);
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = createdBooking.Id }, createdBooking);
+        return StatusCode(StatusCodes.Status201Created, createdBooking);
     }
 
     [HttpPut("{id:guid}")]
