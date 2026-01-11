@@ -114,12 +114,12 @@ app.UseSwaggerUI(c =>
     c.EnablePersistAuthorization();
     c.DefaultModelsExpandDepth(0);
 });
+app.UseCors("AllowFrontend"); // CORS must be before routing
 app.UseRouting();
 app.UseStaticFiles(); // Enable static files serving
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseExceptionHandlerMiddleware();
 app.MapControllers();
-app.UseCors("AllowFrontend");
 
 await app.RunAsync();

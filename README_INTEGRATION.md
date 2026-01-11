@@ -274,8 +274,11 @@ docker compose restart
 
 1. Verify backend is running: `curl http://localhost:5039/api/car`
 2. Check CORS configuration in `Program.cs`
+   - **Important**: CORS middleware (`app.UseCors()`) must be called **before** `app.UseRouting()` for proper CORS headers
+   - Correct order: `app.UseCors("AllowFrontend")` → `app.UseRouting()` → `app.UseAuthentication()` → `app.UseAuthorization()` → `app.MapControllers()`
 3. Verify `.env` file exists in frontend with correct API URL
 4. Clear browser cache and cookies
+5. Check browser console for CORS-related errors
 
 ### Entity Framework Errors
 
