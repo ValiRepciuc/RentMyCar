@@ -69,6 +69,7 @@ public class AccountController : ControllerBase
             Response.Cookies.Append("access_token", token, new CookieOptions
             {
                 HttpOnly = true,
+                Secure = true, // Only send over HTTPS
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
@@ -111,6 +112,7 @@ public class AccountController : ControllerBase
         Response.Cookies.Append("access_token", token, new CookieOptions
         {
             HttpOnly = true,
+            Secure = true, // Only send over HTTPS
             SameSite = SameSiteMode.Lax,
             Expires = DateTimeOffset.UtcNow.AddDays(7)
         });
