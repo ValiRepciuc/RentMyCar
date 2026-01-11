@@ -25,6 +25,14 @@ public class TokenService : ITokenService
         {
             throw new InvalidOperationException("JWT:SigningKey is not configured. Please add JWT configuration to appsettings.json");
         }
+        if (string.IsNullOrEmpty(_config["JWT:Issuer"]))
+        {
+            throw new InvalidOperationException("JWT:Issuer is not configured. Please add JWT configuration to appsettings.json");
+        }
+        if (string.IsNullOrEmpty(_config["JWT:Audience"]))
+        {
+            throw new InvalidOperationException("JWT:Audience is not configured. Please add JWT configuration to appsettings.json");
+        }
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
     }
     public string CreateToken(AppUser user, IList<string> roles)
