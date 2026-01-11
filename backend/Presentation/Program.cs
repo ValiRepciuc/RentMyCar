@@ -5,6 +5,7 @@ using Infrastructure.Json;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Presentation;
 
@@ -100,6 +101,13 @@ var app = builder.Build();
 if (args.Contains("--seed"))
 {
     using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    
+    // Apply pending migrations
+    Console.WriteLine("Applying database migrations...");
+    await dbContext.Database.MigrateAsync();
+    Console.WriteLine("Migrations applied successfully!");
+    
     var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
     await seeder.SeedAsync();
     Console.WriteLine("Database seeding completed. Exiting...");
