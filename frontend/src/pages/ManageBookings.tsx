@@ -21,12 +21,12 @@ export const ManageBookings = () => {
     ? ownerBookings
     : ownerBookings.filter(b => b.status === filter);
 
-  const handleAccept = (bookingId: string) => {
-    updateBooking(bookingId, { status: 'accepted' });
+  const handleAccept = async (bookingId: string) => {
+    await updateBooking(bookingId, { status: 'accepted' });
   };
 
-  const handleReject = (bookingId: string) => {
-    updateBooking(bookingId, { status: 'rejected' });
+  const handleReject = async (bookingId: string) => {
+    await updateBooking(bookingId, { status: 'rejected' });
   };
 
   return (

@@ -30,21 +30,21 @@ export const MyBookings = ({ onNavigate }: MyBookingsProps) => {
     ? myBookings
     : myBookings.filter(b => b.status === filter);
 
-  const handleCancelBooking = () => {
+  const handleCancelBooking = async () => {
     if (selectedBooking) {
-      cancelBooking(selectedBooking);
+      await cancelBooking(selectedBooking);
       setShowCancelModal(false);
       setSelectedBooking(null);
     }
   };
 
-  const handleAddReview = (rating: number, comment: string) => {
+  const handleAddReview = async (rating: number, comment: string) => {
     if (!selectedBooking) return;
 
     const booking = bookings.find(b => b.id === selectedBooking);
     if (!booking) return;
 
-    addReview({
+    await addReview({
       bookingId: booking.id,
       carId: booking.carId,
       clientId: currentUser.id,
