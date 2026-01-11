@@ -74,12 +74,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       const data = await apiService.login(email, password);
       
       // Map backend user data to frontend User type
+      const backendRole = data.Role || 'User';
+      const frontendRole = backendRole.toLowerCase() === 'owner' ? 'owner' : 'client';
+      
       const user: User = {
         id: data.Email || data.UserName,
         name: `${data.FirstName} ${data.LastName}`,
         email: data.Email,
         password: '', // Don't store password
-        role: data.Role.toLowerCase() as 'client' | 'owner',
+        role: frontendRole,
         avatar: 'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=200',
         createdAt: new Date().toISOString(),
       };
@@ -122,12 +125,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         role: role === 'client' ? 'User' : 'Owner',
       });
 
+      const backendRole = data.Role || 'User';
+      const frontendRole = backendRole.toLowerCase() === 'owner' ? 'owner' : 'client';
+
       const user: User = {
         id: data.Email || data.UserName,
         name: `${data.FirstName} ${data.LastName}`,
         email: data.Email,
         password: '',
-        role: data.Role.toLowerCase() as 'client' | 'owner',
+        role: frontendRole,
         avatar: 'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=200',
         createdAt: new Date().toISOString(),
       };
