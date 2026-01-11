@@ -166,7 +166,23 @@ namespace Domain.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Features")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("FuelType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrls")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -182,6 +198,15 @@ namespace Domain.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("PricePerDay")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("ReviewCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Seats")
                         .HasColumnType("integer");
 
                     b.Property<string>("Transmission")

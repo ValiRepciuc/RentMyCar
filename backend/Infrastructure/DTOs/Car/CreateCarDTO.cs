@@ -10,4 +10,13 @@ public class CreateCarDTO
     public string FuelType { get; set; } = "Petrol";
     public string Transmission { get; set; } = "Manual";
     public bool IsActive { get; set; } = true;
+    
+    // Image fields
+    public string ImageUrl { get; set; } = String.Empty;
+    public List<string> ImageUrls { get; set; } = new List<string>();
+    
+    // Extended information
+    public string Description { get; set; } = String.Empty;
+    public List<string> Features { get; set; } = new List<string>();
+    public int Seats { get; set; } = 5;
 }

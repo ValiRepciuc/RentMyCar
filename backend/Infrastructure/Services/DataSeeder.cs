@@ -94,14 +94,84 @@ public class DataSeeder : IDataSeeder
         
         var carsData = new[]
         {
-            new { Brand = "Toyota", Model = "Camry", Year = 2022, PricePerDay = 65, City = "New York", FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-2", ImageUrl = "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=800" },
-            new { Brand = "Honda", Model = "CR-V", Year = 2023, PricePerDay = 75, City = "Los Angeles", FuelType = "Hybrid", Transmission = "Automatic", OwnerId = "user-2", ImageUrl = "https://images.pexels.com/photos/164634/pexels-photo-164634.jpeg?auto=compress&cs=tinysrgb&w=800" },
-            new { Brand = "Tesla", Model = "Model 3", Year = 2023, PricePerDay = 95, City = "San Francisco", FuelType = "Electric", Transmission = "Automatic", OwnerId = "user-3", ImageUrl = "https://images.pexels.com/photos/27786289/pexels-photo-27786289.jpeg?auto=compress&cs=tinysrgb&w=800" },
-            new { Brand = "BMW", Model = "X5", Year = 2022, PricePerDay = 110, City = "Chicago", FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-4", ImageUrl = "https://images.pexels.com/photos/909907/pexels-photo-909907.jpeg?auto=compress&cs=tinysrgb&w=800" },
-            new { Brand = "Ford", Model = "Mustang", Year = 2023, PricePerDay = 120, City = "Miami", FuelType = "Petrol", Transmission = "Manual", OwnerId = "user-4", ImageUrl = "https://images.pexels.com/photos/544542/pexels-photo-544542.jpeg?auto=compress&cs=tinysrgb&w=800" },
-            new { Brand = "Jeep", Model = "Wrangler", Year = 2022, PricePerDay = 85, City = "Denver", FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-3", ImageUrl = "https://images.pexels.com/photos/1545743/pexels-photo-1545743.jpeg?auto=compress&cs=tinysrgb&w=800" },
-            new { Brand = "Mercedes-Benz", Model = "C-Class", Year = 2023, PricePerDay = 100, City = "New York", FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-2", ImageUrl = "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800" },
-            new { Brand = "Chevrolet", Model = "Tahoe", Year = 2022, PricePerDay = 90, City = "Austin", FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-4", ImageUrl = "https://images.pexels.com/photos/627678/pexels-photo-627678.jpeg?auto=compress&cs=tinysrgb&w=800" }
+            new { 
+                Brand = "Toyota", Model = "Camry", Year = 2022, PricePerDay = 65, City = "New York", 
+                FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-2", 
+                ImageUrl = "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=800",
+                ImageUrls = new[] { "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=800" },
+                Description = "Reliable and comfortable sedan perfect for city driving and road trips.",
+                Features = new[] { "Bluetooth", "Backup Camera", "Apple CarPlay", "Cruise Control" },
+                Seats = 5, Rating = 4.8, ReviewCount = 24
+            },
+            new { 
+                Brand = "Honda", Model = "CR-V", Year = 2023, PricePerDay = 75, City = "Los Angeles", 
+                FuelType = "Hybrid", Transmission = "Automatic", OwnerId = "user-2", 
+                ImageUrl = "https://images.pexels.com/photos/164634/pexels-photo-164634.jpeg?auto=compress&cs=tinysrgb&w=800",
+                ImageUrls = new[] { "https://images.pexels.com/photos/164634/pexels-photo-164634.jpeg?auto=compress&cs=tinysrgb&w=800" },
+                Description = "Spacious SUV with excellent fuel economy and modern safety features.",
+                Features = new[] { "All-Wheel Drive", "Lane Assist", "Sunroof", "Heated Seats" },
+                Seats = 5, Rating = 4.9, ReviewCount = 18
+            },
+            new { 
+                Brand = "Tesla", Model = "Model 3", Year = 2023, PricePerDay = 95, City = "San Francisco", 
+                FuelType = "Electric", Transmission = "Automatic", OwnerId = "user-3", 
+                ImageUrl = "https://images.pexels.com/photos/27786289/pexels-photo-27786289.jpeg?auto=compress&cs=tinysrgb&w=800",
+                ImageUrls = new[] { "https://images.pexels.com/photos/27786289/pexels-photo-27786289.jpeg?auto=compress&cs=tinysrgb&w=800" },
+                Description = "Experience the future with this fully electric sedan. Autopilot included!",
+                Features = new[] { "Autopilot", "Premium Sound", "Glass Roof", "Supercharger Access" },
+                Seats = 5, Rating = 5.0, ReviewCount = 32
+            },
+            new { 
+                Brand = "BMW", Model = "X5", Year = 2022, PricePerDay = 110, City = "Chicago", 
+                FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-4", 
+                ImageUrl = "https://images.pexels.com/photos/909907/pexels-photo-909907.jpeg?auto=compress&cs=tinysrgb&w=800",
+                ImageUrls = new[] { 
+                    "https://images.pexels.com/photos/909907/pexels-photo-909907.jpeg?auto=compress&cs=tinysrgb&w=800",
+                    "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800"
+                },
+                Description = "Luxury SUV with premium features and powerful performance.",
+                Features = new[] { "Leather Seats", "Premium Audio", "Panoramic Roof", "Navigation" },
+                Seats = 7, Rating = 4.7, ReviewCount = 15
+            },
+            new { 
+                Brand = "Ford", Model = "Mustang", Year = 2023, PricePerDay = 120, City = "Miami", 
+                FuelType = "Petrol", Transmission = "Manual", OwnerId = "user-4", 
+                ImageUrl = "https://images.pexels.com/photos/544542/pexels-photo-544542.jpeg?auto=compress&cs=tinysrgb&w=800",
+                ImageUrls = new[] { "https://images.pexels.com/photos/544542/pexels-photo-544542.jpeg?auto=compress&cs=tinysrgb&w=800" },
+                Description = "Iconic sports car for those who want to make a statement.",
+                Features = new[] { "Sport Mode", "Premium Sound", "Performance Package", "Rear Spoiler" },
+                Seats = 4, Rating = 4.9, ReviewCount = 21
+            },
+            new { 
+                Brand = "Jeep", Model = "Wrangler", Year = 2022, PricePerDay = 85, City = "Denver", 
+                FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-3", 
+                ImageUrl = "https://images.pexels.com/photos/1545743/pexels-photo-1545743.jpeg?auto=compress&cs=tinysrgb&w=800",
+                ImageUrls = new[] { "https://images.pexels.com/photos/1545743/pexels-photo-1545743.jpeg?auto=compress&cs=tinysrgb&w=800" },
+                Description = "Adventure-ready SUV perfect for off-road trips and outdoor activities.",
+                Features = new[] { "4x4", "Removable Top", "Off-Road Tires", "Tow Package" },
+                Seats = 5, Rating = 4.6, ReviewCount = 19
+            },
+            new { 
+                Brand = "Mercedes-Benz", Model = "C-Class", Year = 2023, PricePerDay = 100, City = "New York", 
+                FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-2", 
+                ImageUrl = "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800",
+                ImageUrls = new[] { "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800" },
+                Description = "Elegant luxury sedan with cutting-edge technology and comfort.",
+                Features = new[] { "Ambient Lighting", "Massage Seats", "Voice Control", "Advanced Safety" },
+                Seats = 5, Rating = 4.8, ReviewCount = 27
+            },
+            new { 
+                Brand = "Chevrolet", Model = "Tahoe", Year = 2022, PricePerDay = 90, City = "Austin", 
+                FuelType = "Petrol", Transmission = "Automatic", OwnerId = "user-4", 
+                ImageUrl = "https://images.pexels.com/photos/627678/pexels-photo-627678.jpeg?auto=compress&cs=tinysrgb&w=800",
+                ImageUrls = new[] { 
+                    "https://images.pexels.com/photos/627678/pexels-photo-627678.jpeg?auto=compress&cs=tinysrgb&w=800",
+                    "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=800"
+                },
+                Description = "Full-size SUV with plenty of space for families and luggage.",
+                Features = new[] { "Third Row", "WiFi Hotspot", "Towing Capacity", "Rear Entertainment" },
+                Seats = 8, Rating = 4.5, ReviewCount = 13
+            }
         };
 
         foreach (var carData in carsData)
@@ -122,7 +192,14 @@ public class DataSeeder : IDataSeeder
                 FuelType = carData.FuelType,
                 Transmission = carData.Transmission,
                 OwnerId = users[carData.OwnerId].Id,
-                IsActive = true
+                IsActive = true,
+                ImageUrl = carData.ImageUrl,
+                ImageUrls = System.Text.Json.JsonSerializer.Serialize(carData.ImageUrls),
+                Description = carData.Description,
+                Features = System.Text.Json.JsonSerializer.Serialize(carData.Features),
+                Seats = carData.Seats,
+                Rating = carData.Rating,
+                ReviewCount = carData.ReviewCount
             };
 
             _context.Car.Add(car);

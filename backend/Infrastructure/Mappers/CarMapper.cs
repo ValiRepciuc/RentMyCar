@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Infrastructure.DTOs.Car;
+using System.Text.Json;
 
 namespace Infrastructure.Mappers;
 
@@ -19,7 +20,14 @@ public static class CarMapper
             Transmission = car.Transmission,
             IsActive = car.IsActive,
             OwnerId = car.OwnerId,
-            OwnerName = $"{car.Owner.FristName} {car.Owner.LastName}"
+            OwnerName = $"{car.Owner.FristName} {car.Owner.LastName}",
+            ImageUrl = car.ImageUrl,
+            ImageUrls = DeserializeJsonArray(car.ImageUrls),
+            Description = car.Description,
+            Features = DeserializeJsonArray(car.Features),
+            Seats = car.Seats,
+            Rating = car.Rating,
+            ReviewCount = car.ReviewCount
         };
     }
 
@@ -35,6 +43,13 @@ public static class CarMapper
             FuelType = carDto.FuelType,
             Transmission = carDto.Transmission,
             IsActive = carDto.IsActive,
+            ImageUrl = carDto.ImageUrl,
+            ImageUrls = SerializeJsonArray(carDto.ImageUrls),
+            Description = carDto.Description,
+            Features = SerializeJsonArray(carDto.Features),
+            Seats = carDto.Seats,
+            Rating = 0.0,
+            ReviewCount = 0
         };
     }
 
@@ -48,6 +63,37 @@ public static class CarMapper
         existingCar.FuelType = carDto.FuelType;
         existingCar.Transmission = carDto.Transmission;
         existingCar.IsActive = carDto.IsActive;
-
+        
+        if (carDto.ImageUrl != null)
+            existingCar.ImageUrl = carDto.ImageUrl;
+        
+        if (carDto.ImageUrls != null)
+            existingCar.ImageUrls = SerializeJsonArray(carDto.ImageUrls);
+        
+        if (carDto.Description != null)
+            existingCar.Description = carDto.Description;
+        
+        if (carDto.Features != null)
+            existingCar.Features = SerializeJsonArray(carDto.Features);
+        
+        if (carDto.Seats.HasValue)
+            existingCar.Seats = carDto.Seats.Value;
+    }
+    
+    private static string SerializeJsonArray(List<string> list)
+    {
+        return JsonSerializer.Serialize(list);
+    }
+    
+    private static List<string> DeserializeJsonArray(string json)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+        }
+        catch
+        {
+            return new List<string>();
+        }
     }
 }

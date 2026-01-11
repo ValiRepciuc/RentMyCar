@@ -16,4 +16,14 @@ public class CarDTO
     public string OwnerId { get; set; }
     public string OwnerName { get; set; }
     
+    // Image fields
+    public string ImageUrl { get; set; } = String.Empty;
+    public List<string> ImageUrls { get; set; } = new List<string>();
+    
+    // Extended information
+    public string Description { get; set; } = String.Empty;
+    public List<string> Features { get; set; } = new List<string>();
+    public int Seats { get; set; } = 5;
+    public double Rating { get; set; } = 0.0;
+    public int ReviewCount { get; set; } = 0;
 }
