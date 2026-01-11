@@ -24,7 +24,7 @@ export const CarDetails = ({ carId, onNavigate }: CarDetailsProps) => {
     );
   }
 
-  const handleBook = (startDate: string, endDate: string) => {
+  const handleBook = async (startDate: string, endDate: string) => {
     if (!currentUser) {
       onNavigate('login');
       return;
@@ -35,7 +35,7 @@ export const CarDetails = ({ carId, onNavigate }: CarDetailsProps) => {
     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     const totalPrice = days * car.pricePerDay;
 
-    createBooking({
+    await createBooking({
       carId: car.id,
       clientId: currentUser.id,
       ownerId: car.ownerId,
