@@ -12,12 +12,18 @@ export const Register = ({ onNavigate }: RegisterProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'client' | 'owner'>('client');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = register(name, email, password, role);
-    if (success) {
-      onNavigate('cars');
+    setLoading(true);
+    try {
+      const success = await register(name, email, password, role);
+      if (success) {
+        onNavigate('cars');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

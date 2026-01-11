@@ -2,7 +2,9 @@
 bin/
 obj/
 out/
-wwwroot/
+
+# Don't ignore backend wwwroot (contains static images)
+!backend/Presentation/wwwroot/
 
 # Logs
 *.log

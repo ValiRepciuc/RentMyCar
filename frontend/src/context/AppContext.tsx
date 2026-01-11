@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, Car, Booking, Review, Toast } from '../types';
-import { users as initialUsers, cars as initialCars, bookings as initialBookings, reviews as initialReviews } from '../data/dummyData';
+import { apiService, mapCarDTOToCar } from '../services/apiService';
 
 interface AppContextType {
   currentUser: User | null;
@@ -9,81 +9,145 @@ interface AppContextType {
   bookings: Booking[];
   reviews: Review[];
   toasts: Toast[];
-  login: (email: string, password: string) => boolean;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  register: (name: string, email: string, password: string, role: 'client' | 'owner') => boolean;
+  register: (name: string, email: string, password: string, role: 'client' | 'owner') => Promise<boolean>;
   updateUser: (updates: Partial<User>) => void;
   addCar: (car: Omit<Car, 'id'>) => void;
   updateCar: (carId: string, updates: Partial<Car>) => void;
   deleteCar: (carId: string) => void;
-  createBooking: (booking: Omit<Booking, 'id' | 'createdAt'>) => string;
+  createBooking: (booking: Omit<Booking, 'id' | 'createdAt'>) => Promise<string>;
   updateBooking: (bookingId: string, updates: Partial<Booking>) => void;
   cancelBooking: (bookingId: string) => void;
   addReview: (review: Omit<Review, 'id' | 'createdAt'>) => void;
   addToast: (type: Toast['type'], message: string) => void;
   removeToast: (id: string) => void;
+  fetchCars: (filters?: { city?: string; minPrice?: number; maxPrice?: number; brand?: string; model?: string }) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [cars, setCars] = useState<Car[]>(initialCars);
-  const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [users, setUsers] = useState<User[]>([]);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
+  // Load cars on mount
   useEffect(() => {
+    fetchCars();
+    
+    // Try to restore user from localStorage
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-      const user = JSON.parse(savedUser);
-      const foundUser = users.find(u => u.id === user.id);
-      if (foundUser) {
-        setCurrentUser(foundUser);
+      try {
+        const user = JSON.parse(savedUser);
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('Failed to restore user from localStorage', error);
+        localStorage.removeItem('currentUser');
       }
     }
-  }, [users]);
+  }, []);
 
-  const login = (email: string, password: string): boolean => {
-    const user = users.find(u => u.email === email && u.password === password);
-    if (user) {
+  const fetchCars = async (filters?: { city?: string; minPrice?: number; maxPrice?: number; brand?: string; model?: string }) => {
+    try {
+      setLoading(true);
+      const data = await apiService.getCars(filters);
+      const mappedCars = data.map(mapCarDTOToCar);
+      setCars(mappedCars);
+    } catch (error) {
+      console.error('Failed to fetch cars:', error);
+      addToast('error', 'Failed to load cars');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      const data = await apiService.login(email, password);
+      
+      // Map backend user data to frontend User type
+      const backendRole = data.Role || 'User';
+      const frontendRole = backendRole.toLowerCase() === 'owner' ? 'owner' : 'client';
+      
+      const user: User = {
+        id: data.Email || data.UserName,
+        name: `${data.FirstName} ${data.LastName}`,
+        email: data.Email,
+        password: '', // Don't store password
+        role: frontendRole,
+        avatar: 'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=200',
+        createdAt: new Date().toISOString(),
+      };
+      
       setCurrentUser(user);
       localStorage.setItem('currentUser', JSON.stringify(user));
       addToast('success', `Welcome back, ${user.name}!`);
       return true;
+    } catch (error: any) {
+      addToast('error', error.message || 'Login failed');
+      return false;
+    } finally {
+      setLoading(false);
     }
-    addToast('error', 'Invalid email or password');
-    return false;
   };
 
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem('currentUser');
+    document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     addToast('info', 'You have been logged out');
   };
 
-  const register = (name: string, email: string, password: string, role: 'client' | 'owner'): boolean => {
-    if (users.find(u => u.email === email)) {
-      addToast('error', 'Email already exists');
+  const register = async (name: string, email: string, password: string, role: 'client' | 'owner'): Promise<boolean> => {
+    try {
+      setLoading(true);
+      
+      // Split name into first and last name
+      const nameParts = name.trim().split(' ');
+      const firstName = nameParts[0] || name;
+      const lastName = nameParts.slice(1).join(' ') || name;
+      
+      const data = await apiService.register({
+        email,
+        password,
+        userName: email,
+        firstName,
+        lastName,
+        city: 'Unknown', // Default city, can be updated later
+        role: role === 'client' ? 'User' : 'Owner',
+      });
+
+      const backendRole = data.Role || 'User';
+      const frontendRole = backendRole.toLowerCase() === 'owner' ? 'owner' : 'client';
+
+      const user: User = {
+        id: data.Email || data.UserName,
+        name: `${data.FirstName} ${data.LastName}`,
+        email: data.Email,
+        password: '',
+        role: frontendRole,
+        avatar: 'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=200',
+        createdAt: new Date().toISOString(),
+      };
+
+      setCurrentUser(user);
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      addToast('success', 'Account created successfully!');
+      return true;
+    } catch (error: any) {
+      addToast('error', error.message || 'Registration failed');
       return false;
+    } finally {
+      setLoading(false);
     }
-
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      name,
-      email,
-      password,
-      role,
-      avatar: 'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=200',
-      createdAt: new Date().toISOString(),
-    };
-
-    setUsers([...users, newUser]);
-    setCurrentUser(newUser);
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
-    addToast('success', 'Account created successfully!');
-    return true;
   };
 
   const updateUser = (updates: Partial<User>) => {
@@ -97,6 +161,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addCar = (carData: Omit<Car, 'id'>) => {
+    // This would need to call apiService.createCar in a real implementation
     const newCar: Car = {
       ...carData,
       id: `car-${Date.now()}`,
@@ -115,15 +180,37 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     addToast('success', 'Car deleted successfully');
   };
 
-  const createBooking = (bookingData: Omit<Booking, 'id' | 'createdAt'>): string => {
-    const newBooking: Booking = {
-      ...bookingData,
-      id: `booking-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-    };
-    setBookings([...bookings, newBooking]);
-    addToast('success', 'Booking request sent!');
-    return newBooking.id;
+  const createBooking = async (bookingData: Omit<Booking, 'id' | 'createdAt'>): Promise<string> => {
+    try {
+      setLoading(true);
+      const data = await apiService.createBooking({
+        carId: bookingData.carId,
+        startDate: bookingData.startDate,
+        endDate: bookingData.endDate,
+      });
+      
+      // Map backend booking to frontend booking
+      const newBooking: Booking = {
+        id: data.Id,
+        carId: data.CarId,
+        clientId: bookingData.clientId,
+        ownerId: bookingData.ownerId,
+        startDate: data.StartDate,
+        endDate: data.EndDate,
+        totalPrice: data.TotalPrice,
+        status: data.Status.toLowerCase() as 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled',
+        createdAt: new Date().toISOString(),
+      };
+      
+      setBookings([...bookings, newBooking]);
+      addToast('success', 'Booking request sent!');
+      return newBooking.id;
+    } catch (error: any) {
+      addToast('error', error.message || 'Failed to create booking');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateBooking = (bookingId: string, updates: Partial<Booking>) => {
@@ -187,6 +274,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         bookings,
         reviews,
         toasts,
+        loading,
         login,
         logout,
         register,
@@ -200,6 +288,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         addReview,
         addToast,
         removeToast,
+        fetchCars,
       }}
     >
       {children}
