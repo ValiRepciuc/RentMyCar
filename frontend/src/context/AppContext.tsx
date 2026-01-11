@@ -37,17 +37,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setCurrentUser(user);
-    }
-    // Load initial data from API
-    loadCars();
-    loadBookings();
-  }, []);
-
   const loadCars = async () => {
     try {
       const carsData = await apiService.getCars();
@@ -98,6 +87,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       // Keep using dummy data if API fails
     }
   };
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      setCurrentUser(user);
+    }
+    // Load initial data from API
+    loadCars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
