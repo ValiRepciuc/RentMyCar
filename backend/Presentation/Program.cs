@@ -31,6 +31,24 @@ builder.Services
         options.Password.RequiredLength = 8;
     }).AddEntityFrameworkStores<DatabaseContext>();
 
+// Validate JWT configuration
+var jwtSigningKey = builder.Configuration["JWT:SigningKey"];
+var jwtIssuer = builder.Configuration["JWT:Issuer"];
+var jwtAudience = builder.Configuration["JWT:Audience"];
+
+if (string.IsNullOrEmpty(jwtSigningKey))
+{
+    throw new InvalidOperationException("JWT:SigningKey is not configured. Please add JWT configuration to appsettings.json");
+}
+if (string.IsNullOrEmpty(jwtIssuer))
+{
+    throw new InvalidOperationException("JWT:Issuer is not configured. Please add JWT configuration to appsettings.json");
+}
+if (string.IsNullOrEmpty(jwtAudience))
+{
+    throw new InvalidOperationException("JWT:Audience is not configured. Please add JWT configuration to appsettings.json");
+}
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme =
@@ -45,12 +63,12 @@ builder.Services.AddAuthentication(options =>
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
+            ValidIssuer = jwtIssuer,
             ValidateAudience = true,
-            ValidAudience = builder.Configuration["JWT:Audience"],
+            ValidAudience = jwtAudience,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey =
-                new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
+                new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSigningKey))
         };
         options.Events = new JwtBearerEvents
         {
