@@ -70,17 +70,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     try {
       if (!currentUser) return;
       const bookingsData = await apiService.getBookings();
-      const mappedBookings: Booking[] = bookingsData.map(bookingDto => ({
-        id: bookingDto.Id,
-        carId: bookingDto.CarId,
-        clientId: bookingDto.RenterId,
-        ownerId: '', // Not provided by backend
-        startDate: bookingDto.StartDate,
-        endDate: bookingDto.EndDate,
-        totalPrice: bookingDto.TotalPrice,
-        status: bookingDto.Status.toLowerCase() as 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled',
-        createdAt: new Date().toISOString(),
-      }));
+      const mappedBookings: Booking[] = bookingsData.map(bookingDto => {
+        // Try to find the car to get ownerId, otherwise use empty string
+        const car = cars.find(c => c.id === bookingDto.CarId);
+        return {
+          id: bookingDto.Id,
+          carId: bookingDto.CarId,
+          clientId: bookingDto.RenterId,
+          ownerId: car?.ownerId || '', // Get from car data if available
+          startDate: bookingDto.StartDate,
+          endDate: bookingDto.EndDate,
+          totalPrice: bookingDto.TotalPrice,
+          status: bookingDto.Status.toLowerCase() as 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled',
+          createdAt: new Date().toISOString(),
+        };
+      });
       setBookings(mappedBookings);
     } catch (error) {
       console.error('Failed to load bookings:', error);
@@ -143,14 +147,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       // Split name into first and last name
       const nameParts = name.trim().split(' ');
       const firstName = nameParts[0] || name;
-      const lastName = nameParts.slice(1).join(' ') || nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
       const data = await apiService.register({
         email,
         password,
         userName: email.split('@')[0],
         firstName,
-        lastName,
+        lastName: lastName || firstName, // Backend requires lastName, so use firstName as fallback
         city: 'Unknown', // Default city, can be updated later
         role: role === 'owner' ? 'Owner' : 'User',
       });
@@ -188,13 +192,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       // Map frontend User fields to backend fields
       const nameParts = (updates.name || currentUser.name).split(' ');
       const firstName = nameParts[0] || currentUser.name;
-      const lastName = nameParts.slice(1).join(' ') || nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
       await apiService.updateUser({
         userName: currentUser.email.split('@')[0],
         firstName,
-        lastName,
-        city: updates.phone || 'Unknown', // Using phone as placeholder since backend expects city
+        lastName: lastName || firstName, // Backend requires lastName
+        city: 'Unknown', // Note: backend expects city, but frontend doesn't have this field yet
       });
 
       const updatedUser = { ...currentUser, ...updates };
