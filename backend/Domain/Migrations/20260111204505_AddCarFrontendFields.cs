@@ -144,16 +144,24 @@ namespace Domain.Migrations
                 name: "Seats",
                 table: "Car");
 
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "260e7264-7af5-4880-b9e4-98117d9ea565", null, "User", "USER" },
-                    { "3fbf13c0-26a5-4d82-b22d-a8e0608c73a3", null, "Owner", "OWNER" },
-                    { "c092d332-16c1-4d19-9912-b4e72222115f", null, "Support", "SUPPORT" },
-                    { "fed5082c-dcb5-4dec-bd4a-f6133774becf", null, "Admin", "ADMIN" }
-                });
-        }
+            migrationBuilder.Sql(@"
+INSERT INTO ""AspNetRoles"" (""Id"", ""ConcurrencyStamp"", ""Name"", ""NormalizedName"")
+VALUES ('29fb2b17-60c8-4721-aff3-8e8b924eedf8', NULL, 'Admin', 'ADMIN')
+ON CONFLICT (""NormalizedName"") DO NOTHING;
+
+INSERT INTO ""AspNetRoles"" (""Id"", ""ConcurrencyStamp"", ""Name"", ""NormalizedName"")
+VALUES ('88f276ac-abfc-4213-a03a-0c4f3a5fac50', NULL, 'Owner', 'OWNER')
+ON CONFLICT (""NormalizedName"") DO NOTHING;
+
+INSERT INTO ""AspNetRoles"" (""Id"", ""ConcurrencyStamp"", ""Name"", ""NormalizedName"")
+VALUES ('8eb010cd-3ad7-4517-b90b-2766e3757c1a', NULL, 'Support', 'SUPPORT')
+ON CONFLICT (""NormalizedName"") DO NOTHING;
+
+INSERT INTO ""AspNetRoles"" (""Id"", ""ConcurrencyStamp"", ""Name"", ""NormalizedName"")
+VALUES ('bc4b0006-408e-4cf8-adec-ab6b83861256', NULL, 'User', 'USER')
+ON CONFLICT (""NormalizedName"") DO NOTHING;
+");
+
+                    }
     }
 }
