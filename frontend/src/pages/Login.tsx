@@ -91,19 +91,6 @@ export const Login = ({ onNavigate }: LoginProps) => {
               </button>
             </p>
           </div>
-
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium mb-2">Demo Accounts:</p>
-            <p className="text-xs text-gray-600">
-              Client: john@example.com / password123
-            </p>
-            <p className="text-xs text-gray-600">
-              Owner: sarah@example.com / password123
-            </p>
-            <p className="text-xs text-gray-600">
-              Both: mike@example.com / password123
-            </p>
-          </div>
         </div>
       </div>
     </div>

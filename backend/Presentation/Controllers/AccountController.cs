@@ -109,6 +109,40 @@ public class AccountController : ControllerBase
     }
     
     [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        try
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return Unauthorized("Invalid token");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound("User not found");
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? "User";
+
+            return Ok(new NewUserDTO
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                FirstName = user.FristName,
+                LastName = user.LastName,
+                City = user.City,
+                Role = role,
+                Token = "" // Token not needed when just fetching current user
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+    
+    [Authorize]
     [HttpPut("update")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDTO dto)
     {

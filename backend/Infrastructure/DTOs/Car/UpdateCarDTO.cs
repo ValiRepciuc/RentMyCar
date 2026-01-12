@@ -10,4 +10,11 @@ public class UpdateCarDTO
     public string FuelType { get; set; } = "Petrol";
     public string Transmission { get; set; } = "Manual";
     public bool IsActive { get; set; } = true;
+    
+    // Additional fields for frontend integration
+    public string Description { get; set; } = String.Empty;
+    public List<string> Features { get; set; } = new List<string>();
+    public string ImageUrl { get; set; } = String.Empty;
+    public List<string> ImageUrls { get; set; } = new List<string>();
+    public int Seats { get; set; } = 5;
 }

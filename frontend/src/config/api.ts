@@ -13,6 +13,7 @@ export const endpoints = {
   register: `${API_BASE_URL}/api/account/register`,
   login: `${API_BASE_URL}/api/account/login`,
   updateUser: `${API_BASE_URL}/api/account/update`,
+  currentUser: `${API_BASE_URL}/api/account/me`,
   
   // Cars
   cars: `${API_BASE_URL}/api/car`,
