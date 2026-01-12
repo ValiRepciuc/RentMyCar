@@ -50,7 +50,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         
         const user: User = {
           id: userData.Email || userData.UserName,
-          name: `${userData.FirstName} ${userData.LastName}`,
+          name: `${userData.FirstName} ${userData.LastName}`.trim(),
           email: userData.Email,
           password: '',
           role: frontendRole,
@@ -94,7 +94,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       
       const user: User = {
         id: data.Email || data.UserName,
-        name: `${data.FirstName} ${data.LastName}`,
+        name: `${data.FirstName} ${data.LastName}`.trim(),
         email: data.Email,
         password: '', // Don't store password
         role: frontendRole,
@@ -128,7 +128,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       // Split name into first and last name
       const nameParts = name.trim().split(' ');
       const firstName = nameParts[0] || name;
-      const lastName = nameParts.slice(1).join(' ') || name;
+      const lastName = nameParts.slice(1).join(' ') || '';
       
       const data = await apiService.register({
         email,
@@ -145,7 +145,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
       const user: User = {
         id: data.Email || data.UserName,
-        name: `${data.FirstName} ${data.LastName}`,
+        name: `${data.FirstName} ${data.LastName}`.trim(),
         email: data.Email,
         password: '',
         role: frontendRole,
@@ -172,13 +172,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       
       // Split name if it was updated
-      let firstName = currentUser.name.split(' ')[0];
-      let lastName = currentUser.name.split(' ').slice(1).join(' ') || firstName;
+      let firstName = currentUser.name.split(' ')[0] || 'User';
+      let lastName = currentUser.name.split(' ').slice(1).join(' ') || '';
       
       if (updates.name) {
         const nameParts = updates.name.trim().split(' ');
-        firstName = nameParts[0] || updates.name;
-        lastName = nameParts.slice(1).join(' ') || firstName;
+        firstName = nameParts[0] || 'User';
+        lastName = nameParts.slice(1).join(' ') || '';
       }
       
       // Call backend API
@@ -194,7 +194,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       
       const updatedUser: User = {
         ...currentUser,
-        name: `${data.FirstName} ${data.LastName}`,
+        name: `${data.FirstName} ${data.LastName}`.trim(),
         email: data.Email,
         role: frontendRole,
         ...updates,
