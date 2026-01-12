@@ -23,4 +23,13 @@ public class CarRepository : BaseRepository<Car>, ICarRepository
         query = func(query);
         return await query.ToListAsync();
     }
+
+    public new async Task<Car> GetByIdAsync(Guid id, bool includeDeleted = false)
+    {
+        var query = includeDeleted
+            ? _context.Car.IgnoreQueryFilters()
+            : _context.Car;
+        
+        return await query.Include(c => c.Owner).FirstOrDefaultAsync(e => e.Id == id);
+    }
 }
