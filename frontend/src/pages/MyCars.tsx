@@ -28,8 +28,8 @@ export const MyCars = ({ onNavigate }: MyCarsProps) => {
 
   const myCars = cars.filter(c => c.ownerId === currentUser.id);
 
-  const handleAddCar = (carData: Omit<Car, 'id' | 'ownerId' | 'rating' | 'reviewCount'>) => {
-    addCar({
+  const handleAddCar = async (carData: Omit<Car, 'id' | 'ownerId' | 'rating' | 'reviewCount'>) => {
+    await addCar({
       ...carData,
       ownerId: currentUser.id,
       rating: 0,

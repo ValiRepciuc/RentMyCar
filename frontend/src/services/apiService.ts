@@ -49,6 +49,41 @@ export const apiService = {
     return response.json();
   },
 
+  async getCurrentUser() {
+    const response = await fetch(endpoints.currentUser, {
+      headers: apiConfig.headers,
+      credentials: apiConfig.credentials,
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch current user');
+    }
+    return response.json();
+  },
+
+  async updateUser(data: {
+    firstName: string;
+    lastName: string;
+    city: string;
+  }) {
+    const response = await fetch(endpoints.updateUser, {
+      method: 'PUT',
+      headers: apiConfig.headers,
+      credentials: apiConfig.credentials,
+      body: JSON.stringify({
+        FirstName: data.firstName,
+        LastName: data.lastName,
+        City: data.city,
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error || 'Failed to update user');
+    }
+    return response.json();
+  },
+
   // ============ Cars ============
   async getCars(filters?: {
     city?: string;

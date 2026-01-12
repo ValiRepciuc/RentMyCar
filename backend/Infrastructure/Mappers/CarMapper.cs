@@ -43,6 +43,13 @@ public static class CarMapper
             FuelType = carDto.FuelType,
             Transmission = carDto.Transmission,
             IsActive = carDto.IsActive,
+            Description = carDto.Description,
+            Features = carDto.Features != null && carDto.Features.Any() ? JsonSerializer.Serialize(carDto.Features) : String.Empty,
+            ImageUrl = carDto.ImageUrl,
+            ImageUrls = carDto.ImageUrls != null && carDto.ImageUrls.Any() ? JsonSerializer.Serialize(carDto.ImageUrls) : String.Empty,
+            Seats = carDto.Seats,
+            Rating = 0.0,
+            ReviewCount = 0
         };
     }
 
@@ -56,6 +63,10 @@ public static class CarMapper
         existingCar.FuelType = carDto.FuelType;
         existingCar.Transmission = carDto.Transmission;
         existingCar.IsActive = carDto.IsActive;
-
+        existingCar.Description = carDto.Description;
+        existingCar.Features = carDto.Features != null && carDto.Features.Any() ? JsonSerializer.Serialize(carDto.Features) : String.Empty;
+        existingCar.ImageUrl = carDto.ImageUrl;
+        existingCar.ImageUrls = carDto.ImageUrls != null && carDto.ImageUrls.Any() ? JsonSerializer.Serialize(carDto.ImageUrls) : String.Empty;
+        existingCar.Seats = carDto.Seats;
     }
 }

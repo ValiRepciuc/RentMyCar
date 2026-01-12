@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Infrastructure.DTOs.Car;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
@@ -35,6 +36,7 @@ public class CarController : ControllerBase
         return Ok(car);
     }
 
+    [Authorize(Roles = "Owner")]
     [HttpPost]
     public async Task<IActionResult> AddAsync([FromBody] CreateCarDTO carDto)
     {

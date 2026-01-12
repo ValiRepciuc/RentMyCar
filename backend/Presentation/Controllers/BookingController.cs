@@ -30,6 +30,7 @@ public class BookingController : ControllerBase
         return Ok(booking);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateBookingDTO booking)
     {
