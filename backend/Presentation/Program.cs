@@ -1,4 +1,4 @@
-
+using Microsoft.AspNetCore.StaticFiles;
 using Domain.Database;
 using Domain.Entities;
 using Infrastructure.Json;
@@ -7,17 +7,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Presentation;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Check for seed argument
 var shouldSeed = args.Contains("--seed");
 
-builder.Services.AddControllers().AddControllersAsServices().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-    options.JsonSerializerOptions.PropertyNamingPolicy = null;
-});
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    })
+    .AddControllersAsServices();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -33,7 +35,8 @@ builder.Services
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = true;
         options.Password.RequiredLength = 8;
-    }).AddEntityFrameworkStores<DatabaseContext>();
+    })
+    .AddEntityFrameworkStores<DatabaseContext>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -43,29 +46,30 @@ builder.Services.AddAuthentication(options =>
                 options.DefaultScheme =
                     options.DefaultSignInScheme =
                         options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(
-    options =>
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]!)
+        )
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
         {
-            ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
-            ValidateAudience = true,
-            ValidAudience = builder.Configuration["JWT:Audience"],
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey =
-                new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                context.Token = context.Request.Cookies["access_token"];
-                return Task.CompletedTask;
-            }
-        };
-    }
-);
+            context.Token = context.Request.Cookies["access_token"];
+            return Task.CompletedTask;
+        }
+    };
+});
 
 builder.Services.AddCors(options =>
 {
@@ -83,27 +87,29 @@ var app = builder.Build();
 // Handle seeding if --seed argument is provided
 if (shouldSeed)
 {
-    using (var scope = app.Services.CreateScope())
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    try
     {
-        var services = scope.ServiceProvider;
-        try
-        {
-            var context = services.GetRequiredService<DatabaseContext>();
-            var userManager = services.GetRequiredService<UserManager<AppUser>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            await SeedData.SeedAsync(context, userManager, roleManager);
-            Console.WriteLine("Seeding completed successfully. Exiting...");
-            return;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred while seeding the database: {ex.Message}");
-            Console.WriteLine(ex.StackTrace);
-            throw;
-        }
+        var context = services.GetRequiredService<DatabaseContext>();
+        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+        await SeedData.SeedAsync(context, userManager, roleManager);
+
+        Console.WriteLine("Seeding completed successfully. Exiting...");
+        return;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred while seeding the database: {ex.Message}");
+        Console.WriteLine(ex.StackTrace);
+        throw;
     }
 }
 
+// Swagger
 app.UseSwagger(c => { c.RouteTemplate = "api/swagger/{documentName}/swagger.json"; });
 app.UseSwaggerUI(c =>
 {
@@ -114,12 +120,28 @@ app.UseSwaggerUI(c =>
     c.EnablePersistAuthorization();
     c.DefaultModelsExpandDepth(0);
 });
-app.UseCors("AllowFrontend"); // CORS must be before routing
+
+// Static files + AVIF support
+var provider = new FileExtensionContentTypeProvider();
+provider.Mappings[".avif"] = "image/avif";
+provider.Mappings[".webp"] = "image/webp";
+provider.Mappings[".svg"]  = "image/svg+xml";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
+
 app.UseRouting();
-app.UseStaticFiles(); // Enable static files serving
+
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseExceptionHandlerMiddleware();
+
 app.MapControllers();
 
 await app.RunAsync();
+
