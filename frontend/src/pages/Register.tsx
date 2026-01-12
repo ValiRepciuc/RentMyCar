@@ -13,9 +13,9 @@ export const Register = ({ onNavigate }: RegisterProps) => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'client' | 'owner'>('client');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = register(name, email, password, role);
+    const success = await register(name, email, password, role);
     if (success) {
       onNavigate('cars');
     }

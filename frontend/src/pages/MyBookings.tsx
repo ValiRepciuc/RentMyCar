@@ -10,7 +10,8 @@ interface MyBookingsProps {
   onNavigate: (page: string) => void;
 }
 
-export const MyBookings = ({ onNavigate }: MyBookingsProps) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const MyBookings = (_props: MyBookingsProps) => {
   const { currentUser, bookings, cars, users, cancelBooking, addReview } = useApp();
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -30,21 +31,21 @@ export const MyBookings = ({ onNavigate }: MyBookingsProps) => {
     ? myBookings
     : myBookings.filter(b => b.status === filter);
 
-  const handleCancelBooking = () => {
+  const handleCancelBooking = async () => {
     if (selectedBooking) {
-      cancelBooking(selectedBooking);
+      await cancelBooking(selectedBooking);
       setShowCancelModal(false);
       setSelectedBooking(null);
     }
   };
 
-  const handleAddReview = (rating: number, comment: string) => {
+  const handleAddReview = async (rating: number, comment: string) => {
     if (!selectedBooking) return;
 
     const booking = bookings.find(b => b.id === selectedBooking);
     if (!booking) return;
 
-    addReview({
+    await addReview({
       bookingId: booking.id,
       carId: booking.carId,
       clientId: currentUser.id,

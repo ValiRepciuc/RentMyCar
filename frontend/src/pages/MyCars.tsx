@@ -28,8 +28,8 @@ export const MyCars = ({ onNavigate }: MyCarsProps) => {
 
   const myCars = cars.filter(c => c.ownerId === currentUser.id);
 
-  const handleAddCar = (carData: Omit<Car, 'id' | 'ownerId' | 'rating' | 'reviewCount'>) => {
-    addCar({
+  const handleAddCar = async (carData: Omit<Car, 'id' | 'ownerId' | 'rating' | 'reviewCount'>) => {
+    await addCar({
       ...carData,
       ownerId: currentUser.id,
       rating: 0,
@@ -37,15 +37,15 @@ export const MyCars = ({ onNavigate }: MyCarsProps) => {
     });
   };
 
-  const handleUpdateCar = (carData: Omit<Car, 'id' | 'ownerId' | 'rating' | 'reviewCount'>) => {
+  const handleUpdateCar = async (carData: Omit<Car, 'id' | 'ownerId' | 'rating' | 'reviewCount'>) => {
     if (selectedCar) {
-      updateCar(selectedCar.id, carData);
+      await updateCar(selectedCar.id, carData);
     }
   };
 
-  const handleDeleteCar = () => {
+  const handleDeleteCar = async () => {
     if (carToDelete) {
-      deleteCar(carToDelete);
+      await deleteCar(carToDelete);
       setShowDeleteModal(false);
       setCarToDelete(null);
     }
