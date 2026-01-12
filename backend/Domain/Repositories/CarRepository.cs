@@ -17,19 +17,24 @@ public class CarRepository : BaseRepository<Car>, ICarRepository
         _context = context;
     }
 
+    private IQueryable<Car> GetQueryWithOwner(bool includeDeleted = false)
+    {
+        var query = includeDeleted
+            ? _context.Car.IgnoreQueryFilters()
+            : _context.Car;
+        
+        return query.Include(c => c.Owner);
+    }
+
     public async Task<List<Car>> QueryAsync(Func<IQueryable<Car>, IQueryable<Car>> func)
     {
-        IQueryable<Car> query = _context.Car.Include(c => c.Owner);
+        IQueryable<Car> query = GetQueryWithOwner();
         query = func(query);
         return await query.ToListAsync();
     }
 
     public new async Task<Car> GetByIdAsync(Guid id, bool includeDeleted = false)
     {
-        var query = includeDeleted
-            ? _context.Car.IgnoreQueryFilters()
-            : _context.Car;
-        
-        return await query.Include(c => c.Owner).FirstOrDefaultAsync(e => e.Id == id);
+        return await GetQueryWithOwner(includeDeleted).FirstOrDefaultAsync(e => e.Id == id);
     }
 }
